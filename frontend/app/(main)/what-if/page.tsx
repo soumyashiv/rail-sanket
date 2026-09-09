@@ -9,6 +9,9 @@ import {
   TrendingDown,
   Minus,
   ArrowRight,
+  Clock,
+  Shield,
+  Wrench,
 } from 'lucide-react'
 import { PageHeader } from '@/components/page-header'
 import { Button } from '@/components/ui/button'
@@ -120,37 +123,40 @@ export default function WhatIfPage() {
   return (
     <div>
       <PageHeader
-        badge="SCENARIO SIMULATION & SENSITIVITY · PRD SECTION 17"
-        title="What-If Block Simulator"
-        description="Modify operational constraints, block durations, corridors and department priorities. Simulate how adjustments impact asset availability, idle block time, and train operation punctuality."
+        badge="Simulation"
+        title="What-If Simulator"
+        description="Evaluate how duration, timing, and constraint adjustments impact division performance."
       />
 
       {/* Preset Scenarios Strip */}
       <div className="mb-5 flex flex-wrap items-center gap-2 rounded-xl border border-border/80 bg-secondary/30 p-3">
-        <span className="text-xs font-bold text-muted-foreground mr-1 uppercase tracking-wider">
+        <span className="text-xs font-semibold text-muted-foreground mr-1">
           Preset Scenarios:
         </span>
         <button
           onClick={() => applyPreset({ blockDuration: 180, trainConstraint: 'Standard', priority: 'Maximize bundling' })}
-          className="rounded-lg border border-border bg-background px-2.5 py-1 text-xs font-medium hover:border-primary hover:text-primary transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 py-1 text-xs font-medium hover:border-primary hover:text-primary transition-colors cursor-pointer"
         >
-          ⚡ Extended Window (+9% util)
+          <Clock className="size-3.5 text-primary" />
+          <span>Extended Window (+9% util)</span>
         </button>
         <button
           onClick={() => applyPreset({ trainConstraint: 'Strict', blockDuration: 90, priority: 'Critical first' })}
-          className="rounded-lg border border-border bg-background px-2.5 py-1 text-xs font-medium hover:border-primary hover:text-primary transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 py-1 text-xs font-medium hover:border-primary hover:text-primary transition-colors cursor-pointer"
         >
-          🛡️ Passenger Priority (Strict Constraints)
+          <Shield className="size-3.5 text-primary" />
+          <span>Passenger Priority (Strict)</span>
         </button>
         <button
           onClick={() => applyPreset({ department: 'Engineering', blockDuration: 240, trainConstraint: 'Relaxed' })}
-          className="rounded-lg border border-border bg-background px-2.5 py-1 text-xs font-medium hover:border-primary hover:text-primary transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 py-1 text-xs font-medium hover:border-primary hover:text-primary transition-colors cursor-pointer"
         >
-          🔨 Mega Track Block (4hr Engineering)
+          <Wrench className="size-3.5 text-primary" />
+          <span>Mega Track Block (4hr Engineering)</span>
         </button>
         <button
           onClick={resetScenario}
-          className="ml-auto text-xs text-muted-foreground hover:text-foreground font-medium"
+          className="ml-auto text-xs text-muted-foreground hover:text-foreground font-medium cursor-pointer"
         >
           Reset to baseline
         </button>

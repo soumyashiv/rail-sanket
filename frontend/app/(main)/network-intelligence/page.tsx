@@ -5,17 +5,7 @@ import Link from 'next/link'
 import {
   Network,
   CalendarClock,
-  Radio,
-  Filter,
-  RefreshCw,
-  Building2,
-  Calendar,
-  Layers,
   Search,
-  AlertTriangle,
-  Sparkles,
-  ShieldAlert,
-  Activity,
 } from 'lucide-react'
 import {
   networkTopKpis,
@@ -93,79 +83,49 @@ export default function NetworkIntelligencePage() {
   }
 
   return (
-    <div className="space-y-5 relative">
-      {/* Live OCC Division Alert Ticker Strip */}
-      <div className="flex items-center justify-between gap-3 rounded-lg border border-border/80 bg-secondary/30 px-3.5 py-1.5 text-xs font-mono">
-        <div className="flex items-center gap-2 truncate">
-          <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-[10px] text-primary shrink-0">
-            <Radio className="size-3 animate-pulse text-cyan-400" />
-            OCC BROADCAST:
-          </span>
-          <span className="truncate text-muted-foreground text-[11px]">
-            ⚠️ Caution Order #SER-281: 30 km/h PSR at KM 118/4 (KGP-HIJ) · ⚡ 11:30–13:30 AI Bundled Window Active · TMS feed latency: 42ms
-          </span>
-        </div>
-
-        <div className="hidden sm:flex items-center gap-2 shrink-0 text-[11px] text-muted-foreground">
-          <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-foreground font-semibold">SER KHARAGPUR (KGP)</span>
-        </div>
-      </div>
-
-      {/* Page Header: High-Density Operational Command Bar */}
-      <div className="flex flex-col gap-3 rounded-xl border border-border/80 bg-card/80 p-4 shadow-xs backdrop-blur-md md:flex-row md:items-center md:justify-between">
+    <div className="space-y-4 relative">
+      {/* Page Header */}
+      <div className="flex flex-col gap-3 rounded-lg border border-border/70 bg-card p-3.5 shadow-xs md:flex-row md:items-center md:justify-between">
         <div>
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex size-7 items-center justify-center rounded-lg bg-primary/10 text-primary">
+          <div className="flex items-center gap-2">
+            <div className="flex size-7 items-center justify-center rounded-md bg-primary/10 text-primary">
               <Network className="size-4" />
             </div>
-            <h1 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+            <h1 className="text-lg font-bold tracking-tight text-foreground">
               Network Intelligence
             </h1>
-            <span className="rounded-full border border-primary/20 bg-primary/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary">
-              OCC Situational Awareness
-            </span>
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Topological block capacity, train headway movement & asset risk intersection · Horizon:{' '}
-            <span className="font-mono font-medium text-foreground">12–18 October 2026</span>
+          <p className="mt-0.5 text-xs text-muted-foreground">
+            Real-time track topology, train movement, and corridor maintenance windows.
           </p>
         </div>
 
         {/* Right Status & Primary Action */}
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
-            <span className="flex items-center gap-1.5 font-medium text-emerald-500">
-              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-              TMS Live Feed
-            </span>
-            <span>· Updated just now</span>
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className="size-2 rounded-full bg-emerald-500" />
+            <span className="text-[11px] font-medium">TMS Live Feed</span>
           </div>
 
-          <Button asChild size="sm" className="gap-2 shadow-sm font-semibold">
+          <Button asChild size="sm" className="h-8 gap-1.5 shadow-xs text-xs">
             <Link href="/planner">
-              <CalendarClock className="size-4" />
+              <CalendarClock className="size-3.5" />
               Open Block Planner
             </Link>
           </Button>
         </div>
       </div>
 
-      {/* Filter Bar Strip with Global Train/Station Search */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border/70 bg-secondary/30 px-3.5 py-2 text-xs">
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-[10px] text-muted-foreground">
-            <Filter className="size-3 text-primary" />
-            Filters:
-          </span>
-
+      {/* Filter Bar Strip */}
+      <div className="flex flex-wrap items-center justify-between gap-2.5 rounded-lg border border-border/60 bg-secondary/25 px-3 py-2 text-xs">
+        <div className="flex flex-wrap items-center gap-2.5">
           {/* Corridor Dropdown Selector */}
           <div className="flex items-center gap-1.5">
             <span className="text-muted-foreground text-[11px]">Corridor:</span>
             <select
               value={selectedCorridorId}
               onChange={(e) => handleCorridorFilterChange(e.target.value)}
-              className="rounded-md border border-border bg-background px-2.5 py-1 text-xs font-semibold text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              className="rounded border border-border bg-background px-2 py-1 text-xs font-semibold text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
             >
               <option value="All">All Corridors (C01–C05)</option>
               {corridors.map((c) => (
@@ -178,52 +138,52 @@ export default function NetworkIntelligencePage() {
 
           {/* Department Selector */}
           <div className="flex items-center gap-1.5">
-            <span className="text-muted-foreground text-[11px]">Department:</span>
+            <span className="text-muted-foreground text-[11px]">Dept:</span>
             <select
               value={selectedDept}
               onChange={(e) => setSelectedDept(e.target.value as any)}
-              className="rounded-md border border-border bg-background px-2.5 py-1 text-xs font-semibold text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+              className="rounded border border-border bg-background px-2 py-1 text-xs font-semibold text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
             >
               <option value="All">All Departments</option>
               <option value="Engineering">Engineering (TMS)</option>
               <option value="S&T">Signalling (SMMS)</option>
-              <option value="Traction">Traction OHE (TDMS)</option>
+              <option value="Traction">Traction (TDMS)</option>
             </select>
           </div>
 
-          {/* Date Range / Horizon */}
-          <div className="flex items-center gap-1.5">
+          {/* Horizon */}
+          <div className="flex items-center gap-1">
             <span className="text-muted-foreground text-[11px]">Horizon:</span>
-            <div className="flex rounded-md border border-border bg-background p-0.5 font-mono text-[11px]">
+            <div className="flex rounded border border-border bg-background p-0.5 text-[11px]">
               {(['7d', '14d', '30d'] as const).map((h) => (
                 <button
                   key={h}
                   onClick={() => setSelectedHorizon(h)}
                   className={cn(
-                    'rounded px-2 py-0.5 font-bold transition-all',
+                    'rounded px-1.5 py-0.2 font-medium transition-all',
                     selectedHorizon === h ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground',
                   )}
                 >
-                  {h.toUpperCase()}
+                  {h}
                 </button>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Global Train / Station Quick Search */}
+        {/* Quick Search */}
         <form onSubmit={handleSearchSubmit} className="flex items-center gap-1.5">
           <div className="relative">
-            <Search className="size-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Search className="size-3.5 absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search train (e.g. 12841) or station (KGP)..."
+              placeholder="Search train or station..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-56 rounded-md border border-border bg-background pl-8 pr-2.5 py-1 text-xs text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-1 focus:ring-primary"
+              className="w-48 rounded border border-border bg-background pl-7 pr-2 py-1 text-xs text-foreground placeholder:text-muted-foreground/70 focus:outline-none focus:ring-1 focus:ring-primary"
             />
           </div>
-          <Button type="submit" size="xs" variant="secondary" className="font-mono text-[11px]">
+          <Button type="submit" size="xs" variant="secondary" className="h-6.5 text-[11px]">
             Find
           </Button>
         </form>

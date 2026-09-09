@@ -15,7 +15,7 @@ import { ChartTooltip } from '@/components/charts/chart-tooltip'
 export function WorkloadChart() {
   return (
     <ResponsiveContainer width="100%" height={240}>
-      <BarChart data={departmentWorkload} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+      <BarChart data={departmentWorkload} margin={{ top: 8, right: 8, left: -16, bottom: 12 }}>
         <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />
         <XAxis
           dataKey="department"

@@ -10,6 +10,7 @@ import {
   CalendarRange,
   FileText,
   Settings,
+  Compass,
 } from 'lucide-react'
 
 export interface NavItem {
@@ -21,7 +22,7 @@ export interface NavItem {
 }
 
 export const navItems: NavItem[] = [
-  { label: 'Dashboard', href: '/', icon: LayoutDashboard, section: 'Planning' },
+  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, section: 'Planning' },
   { label: 'Network Intelligence', href: '/network-intelligence', icon: Network, section: 'Planning' },
   { label: 'Maintenance Queue', href: '/queue', icon: ListChecks, section: 'Planning' },
   { label: 'Auto Block Planner', href: '/planner', icon: CalendarClock, section: 'Planning' },
@@ -31,6 +32,7 @@ export const navItems: NavItem[] = [
   { label: 'What-If Simulator', href: '/what-if', icon: SlidersHorizontal, section: 'Intelligence' },
   { label: 'Reports', href: '/reports', icon: FileText, section: 'System' },
   { label: 'Settings', href: '/settings', icon: Settings, section: 'System' },
+  { label: 'Landing & Onboarding', href: '/', icon: Compass, section: 'System' },
 ]
 
 export const navSections: NavItem['section'][] = ['Planning', 'Intelligence', 'System']

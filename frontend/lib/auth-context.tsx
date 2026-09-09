@@ -73,7 +73,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-const STORAGE_KEY = 'railonic_user_session_v1'
+const STORAGE_KEY = 'railsanket_user_session_v1'
+const LEGACY_STORAGE_KEY = 'railonic_user_session_v1'
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserSession | null>(null)
@@ -81,9 +82,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
 
   useEffect(() => {
-    // Check localStorage on client mount
+    // Check localStorage on client mount (support both new and legacy keys)
     try {
-      const stored = localStorage.getItem(STORAGE_KEY)
+      const stored = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY)
       if (stored) {
         const parsed = JSON.parse(stored) as UserSession
         setUser(parsed)
@@ -119,8 +120,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionUser))
-      // Also set a document cookie so server/middleware can read it if needed
-      document.cookie = `railonic_auth=1; path=/; max-age=86400; SameSite=Lax`
+      document.cookie = `railsanket_auth=1; path=/; max-age=86400; SameSite=Lax`
     } catch (e) {
       console.error('Failed to save user session', e)
     }
@@ -132,6 +132,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     try {
       localStorage.removeItem(STORAGE_KEY)
+      localStorage.removeItem(LEGACY_STORAGE_KEY)
+      document.cookie = `railsanket_auth=; path=/; max-age=0`
       document.cookie = `railonic_auth=; path=/; max-age=0`
     } catch (e) {
       console.error('Failed to clear user session', e)

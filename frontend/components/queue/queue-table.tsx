@@ -83,7 +83,7 @@ export function QueueTable() {
   const SortButton = ({ label, k, className }: { label: string; k: SortKey; className?: string }) => (
     <button
       onClick={() => toggleSort(k)}
-      className={cn('flex items-center gap-1 font-medium hover:text-foreground', className)}
+      className={cn('flex items-center gap-1.5 font-medium hover:text-foreground', className)}
     >
       {label}
       <ArrowUpDown className={cn('size-3', sortKey === k ? 'text-primary' : 'text-muted-foreground/50')} />
@@ -151,7 +151,7 @@ export function QueueTable() {
           <Table>
             <TableHeader>
               <TableRow className="bg-secondary/60 hover:bg-secondary/60">
-                <TableHead className="w-[92px]">
+                <TableHead className="w-[110px]">
                   <SortButton label="Priority" k="priority" />
                 </TableHead>
                 <TableHead>Task</TableHead>
@@ -176,16 +176,22 @@ export function QueueTable() {
                   className="cursor-pointer"
                 >
                   <TableCell>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       <span
                         className={cn(
-                          'flex size-9 items-center justify-center rounded-md font-mono text-sm font-semibold tabular-nums',
-                          priorityTone(t.priority) === 'danger' && 'bg-danger-muted text-danger',
-                          priorityTone(t.priority) === 'warning' && 'bg-warning-muted text-warning-foreground',
-                          priorityTone(t.priority) === 'info' && 'bg-info-muted text-info',
-                          priorityTone(t.priority) === 'neutral' && 'bg-muted text-muted-foreground',
+                          'inline-flex items-center justify-center rounded px-1.5 py-0.5 font-mono text-[11px] font-bold',
+                          t.priority >= 85
+                            ? 'bg-danger/15 text-danger'
+                            : t.priority >= 70
+                              ? 'bg-amber-500/15 text-amber-700 dark:text-amber-400'
+                              : t.priority >= 50
+                                ? 'bg-blue-500/15 text-blue-700 dark:text-blue-400'
+                                : 'bg-muted text-muted-foreground',
                         )}
                       >
+                        {t.priority >= 85 ? 'P1' : t.priority >= 70 ? 'P2' : t.priority >= 50 ? 'P3' : 'P4'}
+                      </span>
+                      <span className="font-mono text-xs font-semibold tabular-nums text-foreground/80">
                         {t.priority}
                       </span>
                     </div>

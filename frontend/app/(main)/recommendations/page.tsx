@@ -57,12 +57,14 @@ export default function RecommendationsPage() {
   return (
     <div>
       <PageHeader
-        badge="AI DECISION SUPPORT · EXPLAINABLE OPTIMIZATION"
-        title="AI Maintenance Block Recommendations"
-        description="The constraint-based optimizer evaluated timetable paths and maintenance backlogs to generate 5 candidate blocks. Review the explainable AI rationale, inspect bundled tasks across Engineering, S&T and Traction, and approve or reject."
+        badge="Decision Support"
+        title="Block Recommendations"
+        description="Candidate maintenance windows evaluated against timetable paths and corridor backlogs."
       >
         <Button
           variant="outline"
+          size="sm"
+          className="h-8 text-xs gap-1.5"
           onClick={() => {
             recommendedBlocks.forEach((b) => {
               if (!decisions[b.id]) setDecisions((prev) => ({ ...prev, [b.id]: 'approved' }))
@@ -70,8 +72,8 @@ export default function RecommendationsPage() {
             toast.success('All pending recommendations approved', { description: 'Weekly plan finalized.' })
           }}
         >
-          <CheckCircle2 className="size-4" />
-          Approve all pending
+          <CheckCircle2 className="size-3.5" />
+          Approve All Pending
         </Button>
       </PageHeader>
 
@@ -83,9 +85,9 @@ export default function RecommendationsPage() {
           { label: 'Approved', value: approvedCount, tone: 'text-success' },
           { label: 'Critical tasks covered', value: recommendedBlocks.reduce((s, b) => s + b.criticalTasks, 0), tone: 'text-danger' },
         ].map((s) => (
-          <Card key={s.label} className="gap-1 p-4">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">{s.label}</p>
-            <p className={`font-mono text-2xl font-semibold tabular-nums ${s.tone}`}>{s.value}</p>
+          <Card key={s.label} className="gap-1 p-3.5 sm:p-4">
+            <p className="text-xs font-medium text-muted-foreground">{s.label}</p>
+            <p className={`font-mono text-2xl font-bold tabular-nums ${s.tone}`}>{s.value}</p>
           </Card>
         ))}
       </section>

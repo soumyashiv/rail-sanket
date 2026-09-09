@@ -64,22 +64,24 @@ export default function ConflictsPage() {
   return (
     <div>
       <PageHeader
-        badge="HARD & SOFT CONSTRAINT VALIDATION · PRD SECTION 18"
-        title="Conflicts & Exceptions Resolution"
-        description="Active operational, resource, and corridor conflicts flagged by the constraint engine. Every conflict provides an explainable root cause and automated resolution path."
+        badge="Validation"
+        title="Conflicts & Exceptions"
+        description="Active operational, resource, and corridor clashes with suggested resolutions."
       >
         <Button
           variant="outline"
+          size="sm"
+          className="h-8 text-xs gap-1.5"
           onClick={() => {
             const openIds = conflicts.filter((c) => !c.resolved).map((c) => c.id)
             setResolvedIds(new Set([...resolvedIds, ...openIds]))
             toast.success('All conflicts marked resolved', {
-              description: 'Weekly block plan is now conflict-free and ready for authorization.',
+              description: 'Weekly block plan is now conflict-free.',
             })
           }}
         >
-          <CheckCircle2 className="size-4" />
-          Apply suggested resolutions
+          <CheckCircle2 className="size-3.5" />
+          Apply Suggested Resolutions
         </Button>
       </PageHeader>
 
@@ -91,9 +93,9 @@ export default function ConflictsPage() {
           { label: 'Resolved', value: resolvedConflicts.length, tone: 'text-success' },
           { label: 'Unscheduled tasks', value: exceptions.length, tone: 'text-warning-foreground' },
         ].map((s) => (
-          <Card key={s.label} className="gap-1 p-4">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">{s.label}</p>
-            <p className={`font-mono text-2xl font-semibold tabular-nums ${s.tone}`}>{s.value}</p>
+          <Card key={s.label} className="gap-1 p-3.5 sm:p-4">
+            <p className="text-xs font-medium text-muted-foreground">{s.label}</p>
+            <p className={`font-mono text-2xl font-bold tabular-nums ${s.tone}`}>{s.value}</p>
           </Card>
         ))}
       </section>
@@ -117,7 +119,7 @@ export default function ConflictsPage() {
 
       {/* Open conflicts */}
       <div className="space-y-3 mb-8">
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
+        <h2 className="text-sm font-semibold text-foreground">
           Open conflicts ({openConflicts.length})
         </h2>
 

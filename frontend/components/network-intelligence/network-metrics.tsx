@@ -135,11 +135,11 @@ export function NetworkMetrics({ kpis, filteredCorridor }: NetworkMetricsProps) 
             <div>
               {/* Top Row: Micro Icon, Label & Live Radar Dot */}
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                <span className="text-xs font-medium text-muted-foreground">
                   {item.label}
                 </span>
                 <div className="flex items-center gap-1.5">
-                  <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="size-1.5 rounded-full bg-emerald-500" />
                   <item.icon className={cn('size-3.5', item.tone)} />
                 </div>
               </div>

@@ -68,9 +68,9 @@ export default function SettingsPage() {
   return (
     <div>
       <PageHeader
-        badge="ENGINE CONFIGURATION & CALIBRATION · PRD SECTION 7"
-        title="Planning Engine & Scoring Parameters"
-        description="Calibrate the multi-criteria optimization weights, headway safety buffers, and minimum block utilization thresholds (PRD Section 7 formula)."
+        badge="Configuration"
+        title="Planning Settings"
+        description="Scoring weights, safety headway buffers, and optimization thresholds."
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -255,7 +255,7 @@ export default function SettingsPage() {
             <CardContent className="p-4">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">About this system</p>
               <p className="text-xs text-muted-foreground">
-                <strong className="text-foreground">Railonic</strong> — AI-Powered Automatic Block Planning (SIH26027)<br />
+                <strong className="text-foreground">RailSanket</strong> — AI-Powered Automatic Block Planning (SIH26027)<br />
                 Ministry of Railways · South Eastern Railway · Kharagpur Division<br />
                 <span className="mt-1 block">Version: MVP / SIH Prototype</span>
               </p>

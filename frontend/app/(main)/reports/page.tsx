@@ -24,7 +24,7 @@ const reports = [
     description: 'Full plan for 14–18 Sep 2026 with task details, timing, and approval status.',
     icon: Calendar,
     formats: ['PDF', 'CSV'],
-    status: 'AI-RECOMMENDED',
+    status: 'Recommended',
     tone: 'info' as const,
     generated: '2026-09-09 15:00',
   },
@@ -34,7 +34,7 @@ const reports = [
     description: 'Corridor-level capacity utilization, backlog, and department workload for September 2026.',
     icon: BarChart3,
     formats: ['PDF', 'CSV'],
-    status: 'DRAFT',
+    status: 'Draft',
     tone: 'neutral' as const,
     generated: '2026-09-09 14:30',
   },
@@ -44,7 +44,7 @@ const reports = [
     description: '4 critical tasks with no feasible block window. Requires operations review.',
     icon: AlertTriangle,
     formats: ['PDF', 'CSV'],
-    status: 'ACTION REQUIRED',
+    status: 'Action Required',
     tone: 'danger' as const,
     generated: '2026-09-09 15:00',
   },
@@ -54,7 +54,7 @@ const reports = [
     description: 'Per-corridor block efficiency, idle time analysis, and bundling effectiveness.',
     icon: BarChart3,
     formats: ['PDF', 'CSV'],
-    status: 'DRAFT',
+    status: 'Draft',
     tone: 'neutral' as const,
     generated: '2026-09-09 14:30',
   },
@@ -64,7 +64,7 @@ const reports = [
     description: 'Asset downtime estimates, availability percentages, and trend over the week.',
     icon: CheckCircle,
     formats: ['PDF'],
-    status: 'DRAFT',
+    status: 'Draft',
     tone: 'neutral' as const,
     generated: '2026-09-09 14:30',
   },
@@ -74,7 +74,7 @@ const reports = [
     description: 'All detected conflicts, severity classification, resolution status, and audit trail.',
     icon: AlertTriangle,
     formats: ['PDF', 'CSV'],
-    status: 'DRAFT',
+    status: 'Draft',
     tone: 'warning' as const,
     generated: '2026-09-09 15:00',
   },
@@ -84,7 +84,7 @@ const reports = [
     description: 'Complete record of planner actions, approvals, rejections, and manual overrides.',
     icon: FileText,
     formats: ['CSV'],
-    status: 'SYSTEM',
+    status: 'System Audit',
     tone: 'neutral' as const,
     generated: '2026-09-09 15:05',
   },
@@ -115,16 +115,18 @@ export default function ReportsPage() {
   return (
     <div>
       <PageHeader
-        badge="GOVERNANCE & AUDIT TRAIL EXPORT · PRD SECTION 25"
-        title="Planning Reports & Audit Logs"
-        description="Formal block plans, asset availability statements, and conflict logs for Divisional Railway Managers (DRM) and Principal Chief Operations Managers (PCOM). Marked AI-RECOMMENDED until certified."
+        badge="Audit & Governance"
+        title="Reports & Exports"
+        description="Operational block plans, availability statements, and conflict logs."
       >
         <Button
           variant="outline"
+          size="sm"
+          className="h-8 text-xs gap-1.5"
           onClick={() => toast.success('All reports queued for export', { description: 'Check your downloads folder.' })}
         >
-          <Download className="size-4" />
-          Export all
+          <Download className="size-3.5" />
+          Export All
         </Button>
       </PageHeader>
 
@@ -166,8 +168,8 @@ export default function ReportsPage() {
                           <span className="animate-pulse">…</span>
                         ) : (
                           <>
-                            {fmt === 'CSV' ? <FileSpreadsheet className="size-3 mr-1" /> : <FileText className="size-3 mr-1" />}
-                            {fmt}
+                            {fmt === 'CSV' ? <FileSpreadsheet className="size-3" /> : <FileText className="size-3" />}
+                            <span>{fmt}</span>
                           </>
                         )}
                       </Button>
@@ -193,11 +195,11 @@ export default function ReportsPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border">
-                  <th className="text-left py-2 pr-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Time</th>
-                  <th className="text-left py-2 pr-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">User</th>
-                  <th className="text-left py-2 pr-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Action</th>
-                  <th className="text-left py-2 pr-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Entity</th>
-                  <th className="text-left py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Note</th>
+                  <th className="text-left py-2 pr-4 text-xs font-medium text-muted-foreground">Time</th>
+                  <th className="text-left py-2 pr-4 text-xs font-medium text-muted-foreground">User</th>
+                  <th className="text-left py-2 pr-4 text-xs font-medium text-muted-foreground">Action</th>
+                  <th className="text-left py-2 pr-4 text-xs font-medium text-muted-foreground">Entity</th>
+                  <th className="text-left py-2 text-xs font-medium text-muted-foreground">Note</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">

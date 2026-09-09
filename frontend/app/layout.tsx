@@ -17,17 +17,17 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Railonic — AI Block Planning for Indian Railways',
+  title: 'RailSanket — AI Block Planning for Indian Railways',
   description:
     'Coordinated, explainable maintenance block planning across Engineering, S&T and Traction. Maximize asset availability while protecting train operations.',
-  generator: 'v0.app',
+  icons: {
+    icon: '/railsanket-logo.png',
+    apple: '/railsanket-logo.png',
+  },
 }
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#0f1420' },
-  ],
+  themeColor: '#ffffff',
 }
 
 export default function RootLayout({
@@ -38,7 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="min-h-screen bg-background font-sans antialiased text-foreground">
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="light" forcedTheme="light" enableSystem={false} disableTransitionOnChange>
           <AuthProvider>
             {children}
             <Toaster richColors position="top-right" />

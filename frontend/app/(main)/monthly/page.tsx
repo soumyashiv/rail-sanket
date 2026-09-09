@@ -40,9 +40,9 @@ export default function MonthlyPage() {
   return (
     <div>
       <PageHeader
-        badge="DIVISION CAPACITY & STRATEGIC PLANNING · PRD SECTION 14"
-        title="Monthly Capacity & Maintenance Demand"
-        description="September 2026 — Kharagpur Division macro planning. Corridor-level maintenance demand vs. available train path windows and backlog drawdown rate."
+        badge="Strategic Horizon"
+        title="Monthly Capacity"
+        description="Corridor-level maintenance demand vs. available train path windows."
       />
 
       {/* Top KPIs */}
@@ -53,10 +53,10 @@ export default function MonthlyPage() {
           { label: 'Capacity utilization', value: `${utilPct}%`, note: 'Division-wide' },
           { label: 'Critical open', value: totalCritical, note: 'Needs priority' },
         ].map((s) => (
-          <Card key={s.label} className="gap-0 p-4">
-            <p className="text-xs uppercase tracking-wide text-muted-foreground">{s.label}</p>
-            <p className="font-mono text-2xl font-semibold tabular-nums mt-2">{s.value}</p>
-            <p className="text-xs text-muted-foreground mt-1">{s.note}</p>
+          <Card key={s.label} className="gap-0 p-3.5 sm:p-4">
+            <p className="text-xs font-medium text-muted-foreground">{s.label}</p>
+            <p className="font-mono text-2xl font-bold tabular-nums mt-1.5">{s.value}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{s.note}</p>
           </Card>
         ))}
       </section>

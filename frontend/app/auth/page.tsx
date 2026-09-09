@@ -8,10 +8,6 @@ import {
   TrainFront,
   ShieldCheck,
   KeyRound,
-  UserCheck,
-  Building2,
-  Calendar,
-  Search,
   ArrowRight,
   Sparkles,
   Lock,
@@ -20,12 +16,11 @@ import {
   AlertCircle,
   Radio,
   FileCheck2,
-  Compass,
-  Layers,
   Wrench,
   Zap,
   LogOut,
-  SlidersHorizontal,
+  Building2,
+  Compass,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -95,649 +90,395 @@ const demoOfficers: DemoOfficer[] = [
 function AuthContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const redirectTarget = searchParams?.get('redirect') || '/network-intelligence'
+  const redirectTarget = searchParams?.get('redirect') || '/planner'
   const { user, isAuthenticated, login, logout } = useAuth()
 
-  const [activeTab, setActiveTab] = useState<'login' | 'personas' | 'register' | 'inquiry'>('personas')
-  const [email, setEmail] = useState<string>('srdom.kgp@ser.railnet.gov.in')
-  const [password, setPassword] = useState<string>('••••••••••••')
-  const [department, setDepartment] = useState<string>('Operating')
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const [requireOtp, setRequireOtp] = useState<boolean>(false)
+  const [activeTab, setActiveTab] = useState<'demo' | 'sso' | 'request'>('demo')
+  const [email, setEmail] = useState('srdom.kgp@ser.railnet.gov.in')
+  const [password, setPassword] = useState('••••••••••••')
+  const [requireOtp, setRequireOtp] = useState(false)
+  const [otpCode, setOtpCode] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Inquiry tab states
-  const [fromStation, setFromStation] = useState<string>('Howrah (HWH)')
-  const [toStation, setToStation] = useState<string>('Kharagpur (KGP)')
-  const [journeyDate, setJourneyDate] = useState<string>('2026-10-14')
+  // Quick Demo Officer Login
+  function handleDemoLogin(officer: DemoOfficer) {
+    setIsSubmitting(true)
+    const session: UserSession = {
+      id: officer.id,
+      name: officer.name,
+      cadre: officer.cadre,
+      designation: officer.designation,
+      department: officer.department,
+      email: officer.email,
+      division: officer.division,
+      role: 'Officer',
+      initials: officer.name
+        .split(' ')
+        .map((p) => p[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase(),
+      authenticatedAt: new Date().toISOString(),
+    }
 
-  function handleLogin(e: React.FormEvent) {
-    e.preventDefault()
-    setIsLoading(true)
-
-    // Map department to realistic officer
-    const matched = defaultOfficers.find((o) => o.department.includes(department)) || defaultOfficers[0]
-
-    setTimeout(() => {
-      setIsLoading(false)
-      toast.success('CRIS Authentication Successful', {
-        description: `Welcome, ${matched.name} (${matched.cadre}). Access granted to Kharagpur Central OCC.`,
-      })
-      login(
-        {
-          ...matched,
-          email: email || matched.email,
-        },
-        redirectTarget,
-      )
-    }, 600)
-  }
-
-  function handleSelectPersona(officer: DemoOfficer) {
-    setEmail(officer.email)
-    setDepartment(officer.department)
-    setIsLoading(true)
-
-    toast.info(`Authenticating as ${officer.name} (${officer.cadre})...`, {
-      description: officer.designation,
+    login(session, redirectTarget)
+    toast.success(`Welcome, ${officer.name} (${officer.cadre})`, {
+      description: `Authenticated as ${officer.designation} · ${officer.division}`,
     })
-
-    setTimeout(() => {
-      setIsLoading(false)
-      toast.success(`Access Granted: ${officer.name}`, {
-        description: `${officer.department} · ${officer.division}`,
-      })
-      login(
-        {
-          id: officer.id,
-          name: officer.name,
-          cadre: officer.cadre,
-          designation: officer.designation,
-          department: officer.department,
-          email: officer.email,
-          division: officer.division,
-          initials: officer.name
-            .split(' ')
-            .map((n) => n[0])
-            .join('')
-            .slice(0, 2)
-            .toUpperCase(),
-        },
-        redirectTarget,
-      )
-    }, 450)
   }
 
-  function handleRegister(e: React.FormEvent) {
+  // Handle Manual Officer Login
+  function handleManualLogin(e: React.FormEvent) {
     e.preventDefault()
-    setIsLoading(true)
+    setIsSubmitting(true)
 
     setTimeout(() => {
-      setIsLoading(false)
-      toast.success('Clearance Request Submitted', {
-        description: 'Your request #CRIS-SER-2026-891 has been routed to Sr. DOM for DRM approval.',
-      })
-      setActiveTab('login')
-    }, 700)
-  }
+      const match =
+        demoOfficers.find((o) => o.email.toLowerCase() === email.toLowerCase()) ||
+        demoOfficers[0]
 
-  function handleInquirySearch(e: React.FormEvent) {
-    e.preventDefault()
-    toast.success('Found 4 Feasible Maintenance Windows', {
-      description: `${fromStation} → ${toStation} on ${journeyDate}. Midday optimal window: 11:30–13:30.`,
-    })
-    router.push('/network-intelligence')
+      const session: UserSession = {
+        id: match.id,
+        name: match.name,
+        cadre: match.cadre,
+        designation: match.designation,
+        department: match.department,
+        email: email,
+        division: match.division,
+        role: 'Officer',
+        initials: match.name
+          .split(' ')
+          .map((p) => p[0])
+          .join('')
+          .slice(0, 2)
+          .toUpperCase(),
+        authenticatedAt: new Date().toISOString(),
+      }
+
+      login(session, redirectTarget)
+      toast.success(`Authentication Successful`, {
+        description: `CRIS SSO Token verified for ${session.name}`,
+      })
+      setIsSubmitting(false)
+    }, 500)
   }
 
   return (
-    <div className="relative min-h-screen w-full select-none overflow-x-hidden bg-slate-950 font-sans text-foreground">
-      {/* 1. Cinematic Scenic Background: Indian Railways Mountain Viaduct */}
-      <div className="absolute inset-0 z-0">
+    <div className="relative min-h-screen bg-slate-950 font-sans text-slate-100 selection:bg-primary selection:text-white">
+      {/* Background: Red WAP-4 Indian Railways Locomotive with Catenary */}
+      <div className="fixed inset-0 z-0">
         <Image
-          src="/railway-viaduct-bg.jpg"
-          alt="Indian Railways Scenic Mountain Viaduct"
+          src="/wap4-loco-bg.jpg"
+          alt="Indian Railways WAP-4 Locomotive on Main Line"
           fill
           priority
-          className="object-cover object-center brightness-90 contrast-105"
+          sizes="100vw"
+          className="object-cover object-center brightness-[0.80] contrast-[1.05] saturate-[1.15]"
         />
-        {/* Rich dark gradient vignette overlays for contrast */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-slate-950/80" />
-        <div className="absolute inset-0 bg-gradient-to-r from-slate-950/80 via-transparent to-slate-950/70" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_20%,rgba(2,6,23,0.85)_100%)]" />
+        {/* Soft, Transparent Contrast Overlay so Locomotive is Beautifully Visible */}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/65 via-slate-950/25 to-slate-950/50" />
       </div>
 
-      {/* 2. Top Navigation Bar matching reference image */}
-      <header className="relative z-20 flex h-20 w-full items-center justify-between px-6 sm:px-12 backdrop-blur-xs border-b border-white/10">
-        {/* Brand Logo & Name */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="flex size-10 items-center justify-center rounded-xl bg-blue-600/90 text-white shadow-lg shadow-blue-500/30 transition-transform group-hover:scale-105 border border-white/20">
-            <TrainFront className="size-6" />
-          </div>
-          <div className="leading-tight">
-            <div className="flex items-center gap-2">
-              <span className="text-xl font-black tracking-tight text-white drop-shadow-md">
-                Railonic
-              </span>
-              <span className="rounded bg-white/20 px-1.5 py-0.2 text-[9px] font-bold uppercase tracking-wider text-white">
-                CRIS Portal
-              </span>
+      {/* Foreground Container */}
+      <div className="relative z-10 flex min-h-screen flex-col">
+        {/* Header Bar */}
+        <header className="flex items-center justify-between px-4 py-3 sm:px-8 border-b border-white/15 bg-slate-950/70 backdrop-blur-md">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="flex size-9 items-center justify-center rounded-lg bg-white p-1 border border-white/40 shadow-sm transition-transform group-hover:scale-105">
+              <Image
+                src="/railsanket-logo.png"
+                alt="Rail Sanket Locomotive Logo"
+                width={32}
+                height={32}
+                className="size-7 object-contain"
+                priority
+              />
             </div>
-            <p className="text-[10px] font-medium tracking-wide text-slate-300">
-              Indian Railways · Automatic Block Planning
-            </p>
-          </div>
-        </Link>
-
-        {/* Central Navigation Pills */}
-        <nav className="hidden lg:flex items-center gap-1.5 rounded-full border border-white/15 bg-slate-900/60 p-1.5 backdrop-blur-md text-xs font-medium text-slate-200">
-          <Link
-            href="/network-intelligence"
-            className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-colors hover:bg-white/10 hover:text-white"
-          >
-            <Compass className="size-3.5 text-cyan-400" />
-            <span>Network Operations</span>
-          </Link>
-          <Link
-            href="/planner"
-            className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-colors hover:bg-white/10 hover:text-white"
-          >
-            <Calendar className="size-3.5 text-primary" />
-            <span>Block Planner</span>
-          </Link>
-          <Link
-            href="/conflicts"
-            className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-colors hover:bg-white/10 hover:text-white"
-          >
-            <AlertCircle className="size-3.5 text-amber-400" />
-            <span>Conflict Matrix</span>
-          </Link>
-          <Link
-            href="/what-if"
-            className="flex items-center gap-1.5 rounded-full px-3.5 py-1.5 transition-colors hover:bg-white/10 hover:text-white"
-          >
-            <Sparkles className="size-3.5 text-violet-400" />
-            <span>What-If Simulator</span>
-          </Link>
-        </nav>
-
-        {/* Right Action Buttons */}
-        <div className="flex items-center gap-3">
-          {isAuthenticated && user ? (
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-300 font-mono hidden sm:inline">
-                {user.name} ({user.cadre})
-              </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={logout}
-                className="text-xs border-white/20 text-slate-200 hover:bg-white/10 gap-1.5"
-              >
-                <LogOut className="size-3" />
-                <span>Sign Out</span>
-              </Button>
-            </div>
-          ) : (
-            <>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setActiveTab('login')}
-                className={cn(
-                  'text-xs font-semibold text-slate-200 hover:text-white hover:bg-white/10 border border-transparent',
-                  activeTab === 'login' && 'border-white/20 bg-white/10 text-white',
-                )}
-              >
-                Officer Login
-              </Button>
-
-              <Button
-                size="sm"
-                onClick={() => setActiveTab('personas')}
-                className="bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-md shadow-blue-600/30 gap-1.5"
-              >
-                <UserCheck className="size-3.5" />
-                <span>1-Click Demo Login</span>
-              </Button>
-            </>
-          )}
-        </div>
-      </header>
-
-      {/* 3. Hero Content & Tagline Section */}
-      <main className="relative z-10 mx-auto flex max-w-7xl flex-col justify-between px-6 pt-10 pb-16 sm:px-12 min-h-[calc(100vh-80px)]">
-        {/* Hero Title and Philosophy from Indian Railways Reference */}
-        <div className="max-w-2xl space-y-3">
-          {/* Sub-tagline */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-950/40 px-3 py-1 text-[11px] font-mono font-bold uppercase tracking-widest text-cyan-300 backdrop-blur-md shadow-xs">
-            <span className="size-1.5 rounded-full bg-cyan-400 animate-pulse" />
-            SAFETY | SECURITY | PUNCTUALITY
-          </div>
-
-          {/* Grand Heading */}
-          <h1 className="text-4xl font-black tracking-tight text-white sm:text-6xl drop-shadow-lg leading-tight">
-            Indian Railways
-          </h1>
-
-          {/* Slogan from Reference Image */}
-          <p className="text-sm font-medium leading-relaxed text-slate-200/90 sm:text-base drop-shadow-sm max-w-xl">
-            Heartily enjoy every journey through our boundless hospitality. Through Indian railways, The Lifeline of the Nation.
-          </p>
-
-          <div className="flex items-center gap-3 pt-1 text-xs text-slate-300/80 font-mono">
-            <span className="flex items-center gap-1 text-emerald-400 font-semibold">
-              <span className="size-2 rounded-full bg-emerald-400 animate-ping" />
-              CRIS Central Auth Server Online
-            </span>
-            <span>·</span>
-            <span>Kharagpur Division, South Eastern Railway</span>
-          </div>
-        </div>
-
-        {/* 4. Interactive Glassmorphism Authentication Console */}
-        <div className="mt-8 w-full max-w-4xl rounded-2xl border border-white/20 bg-slate-900/85 p-4 shadow-2xl backdrop-blur-xl sm:p-6 transition-all duration-300">
-          {/* Already Authenticated Active Banner */}
-          {isAuthenticated && user && (
-            <div className="mb-4 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3.5 flex flex-wrap items-center justify-between gap-3 backdrop-blur-sm">
-              <div className="flex items-center gap-3">
-                <div className="flex size-10 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-400 font-bold font-mono text-sm border border-emerald-500/30">
-                  {user.initials}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-white text-sm">
-                      {user.name}, {user.cadre}
-                    </span>
-                    <span className="rounded bg-emerald-500/20 px-1.5 py-0.2 font-mono text-[9px] font-bold text-emerald-400 border border-emerald-500/30">
-                      SESSION ACTIVE
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-300 font-medium">
-                    {user.designation} · {user.department}
-                  </p>
-                </div>
-              </div>
-
+            <div>
               <div className="flex items-center gap-2">
-                <Button
-                  onClick={logout}
-                  variant="outline"
-                  size="sm"
-                  className="text-xs border-white/20 text-slate-200 hover:bg-white/10"
-                >
-                  Switch Officer
-                </Button>
-                <Button
-                  asChild
-                  size="sm"
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs gap-1.5 shadow-md shadow-emerald-600/30"
-                >
-                  <Link href={redirectTarget}>
-                    <span>Continue Work in OCC</span>
-                    <ArrowRight className="size-3.5" />
-                  </Link>
-                </Button>
+                <Image
+                  src="/railsanket-wordmark-white.png"
+                  alt="Rail Sanket"
+                  width={120}
+                  height={23}
+                  className="h-5.5 w-auto object-contain"
+                  priority
+                />
               </div>
-            </div>
-          )}
-
-          {/* Navigation Tabs */}
-          <div className="flex flex-wrap items-center gap-2 border-b border-white/15 pb-3">
-            <button
-              onClick={() => setActiveTab('personas')}
-              className={cn(
-                'flex items-center gap-2 rounded-lg px-4 py-2 font-mono text-xs font-bold transition-all',
-                activeTab === 'personas'
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
-                  : 'text-slate-300 hover:bg-white/10 hover:text-white',
-              )}
-            >
-              <UserCheck className="size-3.5" />
-              <span>1-Click Demo Personas</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('login')}
-              className={cn(
-                'flex items-center gap-2 rounded-lg px-4 py-2 font-mono text-xs font-bold transition-all',
-                activeTab === 'login'
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
-                  : 'text-slate-300 hover:bg-white/10 hover:text-white',
-              )}
-            >
-              <KeyRound className="size-3.5" />
-              <span>Officer SSO Login</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('inquiry')}
-              className={cn(
-                'flex items-center gap-2 rounded-lg px-4 py-2 font-mono text-xs font-bold transition-all',
-                activeTab === 'inquiry'
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
-                  : 'text-slate-300 hover:bg-white/10 hover:text-white',
-              )}
-            >
-              <Search className="size-3.5" />
-              <span>Block Window / Timetable Inquiry</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('register')}
-              className={cn(
-                'flex items-center gap-2 rounded-lg px-4 py-2 font-mono text-xs font-bold transition-all',
-                activeTab === 'register'
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30'
-                  : 'text-slate-300 hover:bg-white/10 hover:text-white',
-              )}
-            >
-              <FileCheck2 className="size-3.5" />
-              <span>Request Clearance</span>
-            </button>
-          </div>
-
-          {/* Tab: Quick 1-Click Demo Personas */}
-          {activeTab === 'personas' && (
-            <div className="mt-4 space-y-3">
-              <p className="text-xs text-slate-300">
-                Select an authentic Indian Railways operational officer to authenticate and immediately access the division control room:
+              <p className="text-[10px] text-slate-300 font-mono mt-0.5">
+                Indian Railways · Kharagpur Division OCC
               </p>
-
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {demoOfficers.map((officer) => (
-                  <div
-                    key={officer.id}
-                    onClick={() => handleSelectPersona(officer)}
-                    className="group cursor-pointer rounded-xl border border-white/15 bg-slate-800/60 p-3.5 transition-all duration-200 hover:-translate-y-1 hover:border-blue-500/50 hover:bg-slate-800/90 hover:shadow-xl"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className={cn('rounded-md border px-2 py-0.5 font-mono text-[10px] font-bold', officer.badgeColor)}>
-                        {officer.cadre}
-                      </span>
-                      <officer.icon className="size-4 text-slate-400 group-hover:text-blue-400 transition-colors" />
-                    </div>
-
-                    <h4 className="mt-2.5 font-bold text-sm text-white group-hover:text-blue-300 transition-colors">
-                      {officer.name}
-                    </h4>
-                    <p className="text-xs text-blue-400/90 font-medium leading-tight">
-                      {officer.designation}
-                    </p>
-                    <p className="mt-1 text-[11px] text-slate-400">
-                      {officer.department}
-                    </p>
-
-                    <div className="mt-3 pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-slate-300 font-mono">
-                      <span>{officer.division.split(',')[0]}</span>
-                      <span className="text-blue-400 font-bold group-hover:translate-x-0.5 transition-transform">
-                        Login →
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
-          )}
+          </Link>
 
-          {/* Tab: Officer SSO Login Form */}
-          {activeTab === 'login' && (
-            <form onSubmit={handleLogin} className="mt-4 space-y-4">
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                {/* Department Select */}
-                <div>
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-slate-300">
-                    Department
-                  </label>
-                  <select
-                    value={department}
-                    onChange={(e) => setDepartment(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-white/20 bg-slate-800/80 px-3 py-2 text-xs font-semibold text-white focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  >
-                    <option value="Operating">Operating (Traffic/Sr. DOM)</option>
-                    <option value="Engineering">Civil Engineering (TMS/Sr. DEN)</option>
-                    <option value="Traction">Traction (TDMS OHE/Sr. DEE)</option>
-                    <option value="Signalling">Signalling & Telecom (SMMS/Sr. DSTE)</option>
-                  </select>
-                </div>
+          <Link
+            href="/"
+            className="flex items-center gap-1.5 text-xs text-slate-200 hover:text-white transition-colors"
+          >
+            <Compass className="size-3.5 text-primary" />
+            <span className="hidden sm:inline font-medium">Platform Landing &amp; Onboarding</span>
+            <span className="sm:hidden">Landing</span>
+            <ArrowRight className="size-3" />
+          </Link>
+        </header>
 
-                {/* Email / HRMS ID */}
-                <div>
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-slate-300">
-                    CRIS / Railnet Email
-                  </label>
-                  <div className="relative mt-1">
-                    <Mail className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="officer@ser.railnet.gov.in"
-                      className="w-full rounded-lg border border-white/20 bg-slate-800/80 pl-8 pr-3 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
+        {/* Main Content Area */}
+        <main className="flex flex-1 items-center justify-center p-4 sm:p-6 lg:p-8">
+          <div className="w-full max-w-xl space-y-4">
+            {/* Active Session Card (if user is already logged in) */}
+            {isAuthenticated && user && (
+              <div className="rounded-xl border border-emerald-500/40 bg-slate-900/85 p-4 backdrop-blur-xl shadow-xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-emerald-400">
+                    <CheckCircle2 className="size-4 text-emerald-400" />
+                    <span>Active CRIS Railnet Officer Session</span>
                   </div>
+                  <span className="font-mono text-[10px] text-slate-400">
+                    SER KGP OCC
+                  </span>
                 </div>
 
-                {/* Password */}
-                <div>
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-slate-300">
-                    Passkey / CRIS Password
-                  </label>
-                  <div className="relative mt-1">
-                    <Lock className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <input
-                      type="password"
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••••••"
-                      className="w-full rounded-lg border border-white/20 bg-slate-800/80 pl-8 pr-3 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono"
-                    />
+                <div className="flex items-center justify-between gap-3 border-t border-white/10 pt-2.5">
+                  <div>
+                    <p className="text-sm font-bold text-white">
+                      {user.name} <span className="text-xs font-mono text-primary">({user.cadre})</span>
+                    </p>
+                    <p className="text-xs text-slate-300">{user.designation}</p>
+                    <p className="text-[11px] text-slate-400 font-mono mt-0.5">{user.division}</p>
                   </div>
-                </div>
 
-                {/* Division Preselected */}
-                <div>
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-slate-300">
-                    Assigned Division
-                  </label>
-                  <div className="relative mt-1">
-                    <Building2 className="size-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-blue-400" />
-                    <input
-                      type="text"
-                      disabled
-                      value="Kharagpur (SER)"
-                      className="w-full rounded-lg border border-white/20 bg-slate-800/50 pl-8 pr-3 py-2 text-xs font-semibold text-slate-300"
-                    />
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      onClick={() => router.push(redirectTarget)}
+                      className="gap-1.5 h-8 text-xs font-semibold"
+                    >
+                      Continue to OCC
+                      <ArrowRight className="size-3.5" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={logout}
+                      className="h-8 text-xs border-white/20 text-rose-300 hover:bg-rose-500/20"
+                    >
+                      <LogOut className="size-3.5" />
+                    </Button>
                   </div>
                 </div>
               </div>
+            )}
 
-              {/* Two-Factor Option & Submit Action */}
-              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="otpCheckbox"
-                    checked={requireOtp}
-                    onChange={(e) => setRequireOtp(e.target.checked)}
-                    className="size-4 rounded border-white/20 bg-slate-800 text-blue-600 focus:ring-0"
-                  />
-                  <label htmlFor="otpCheckbox" className="text-xs text-slate-300 cursor-pointer">
-                    Enable 2FA Mobile OTP Verification (CRIS Sentinel)
-                  </label>
+            {/* Main Authentication Card */}
+            <div className="rounded-2xl border border-white/15 bg-slate-900/85 p-6 backdrop-blur-xl shadow-2xl space-y-5">
+              {/* Card Title */}
+              <div className="border-b border-white/10 pb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="size-5 text-emerald-400" />
+                    <h2 className="text-lg font-bold text-white tracking-tight">
+                      Officer Authentication
+                    </h2>
+                  </div>
+                  <span className="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[10px] font-mono text-primary font-semibold">
+                    CRIS Railnet Gateway
+                  </span>
                 </div>
+                <p className="text-xs text-slate-300 mt-1">
+                  Select a demo persona for instant access, or sign in with your CRIS staff credentials.
+                </p>
+              </div>
 
-                <div className="flex items-center gap-2">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setActiveTab('personas')}
-                    className="text-xs text-slate-300 hover:text-white"
-                  >
-                    Switch to 1-Click Demo
-                  </Button>
+              {/* Tabs */}
+              <div className="grid grid-cols-2 rounded-lg border border-white/10 bg-slate-950/60 p-1 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('demo')}
+                  className={cn(
+                    'rounded-md py-1.5 font-medium transition-all',
+                    activeTab === 'demo'
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'text-slate-400 hover:text-white',
+                  )}
+                >
+                  ⚡ 1-Click Demo Personas
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('sso')}
+                  className={cn(
+                    'rounded-md py-1.5 font-medium transition-all',
+                    activeTab === 'sso'
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'text-slate-400 hover:text-white',
+                  )}
+                >
+                  🔒 CRIS Railnet SSO
+                </button>
+              </div>
+
+              {/* Tab 1: 1-Click Demo Personas */}
+              {activeTab === 'demo' && (
+                <div className="space-y-3">
+                  <p className="text-xs text-slate-400">
+                    Click any authorized officer below to instantly test multi-department workflows:
+                  </p>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    {demoOfficers.map((officer) => (
+                      <button
+                        key={officer.id}
+                        type="button"
+                        onClick={() => handleDemoLogin(officer)}
+                        disabled={isSubmitting}
+                        className="group relative flex flex-col justify-between rounded-xl border border-white/10 bg-slate-950/60 p-3 text-left transition-all hover:border-primary/60 hover:bg-slate-950 hover:shadow-md disabled:opacity-50"
+                      >
+                        <div>
+                          <div className="flex items-center justify-between mb-1.5">
+                            <span className={cn('rounded px-1.5 py-0.2 font-mono text-[10px] font-bold border', officer.badgeColor)}>
+                              {officer.cadre}
+                            </span>
+                            <span className="text-[10px] text-slate-400 font-mono">
+                              SER KGP
+                            </span>
+                          </div>
+                          <p className="font-bold text-sm text-white group-hover:text-primary transition-colors">
+                            {officer.name}
+                          </p>
+                          <p className="text-xs text-slate-300 line-clamp-1 mt-0.5">
+                            {officer.designation}
+                          </p>
+                          <p className="text-[10px] text-slate-400 line-clamp-1 mt-0.5 font-mono">
+                            {officer.department}
+                          </p>
+                        </div>
+
+                        <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-2 text-[11px] text-primary font-medium">
+                          <span>Enter as {officer.cadre}</span>
+                          <ArrowRight className="size-3 transition-transform group-hover:translate-x-1" />
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 2: Manual SSO Login */}
+              {activeTab === 'sso' && (
+                <form onSubmit={handleManualLogin} className="space-y-3.5">
+                  <div className="space-y-1">
+                    <label className="text-xs text-slate-300 font-medium">
+                      CRIS / Railnet Email or Staff ID
+                    </label>
+                    <div className="relative">
+                      <Mail className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <Input
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="officer@ser.railnet.gov.in"
+                        className="h-9 pl-9 text-xs bg-slate-950 border-white/15 text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-xs text-slate-300 font-medium">
+                      Railnet Passkey / Token
+                    </label>
+                    <div className="relative">
+                      <Lock className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <Input
+                        type="password"
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        className="h-9 pl-9 text-xs bg-slate-950 border-white/15 text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-1 text-xs">
+                    <label className="flex items-center gap-2 cursor-pointer text-slate-300">
+                      <input
+                        type="checkbox"
+                        checked={requireOtp}
+                        onChange={(e) => setRequireOtp(e.target.checked)}
+                        className="rounded border-white/20 bg-slate-950 text-primary focus:ring-primary"
+                      />
+                      <span>Verify with 2FA Mobile OTP</span>
+                    </label>
+                    <span className="text-slate-400 font-mono text-[11px]">KGP Division Gateway</span>
+                  </div>
+
+                  {requireOtp && (
+                    <div className="space-y-1 rounded-lg border border-primary/30 bg-primary/5 p-2.5">
+                      <label className="text-[11px] text-primary font-medium">
+                        Enter 6-Digit Mobile OTP (Sent to registered mobile)
+                      </label>
+                      <Input
+                        type="text"
+                        maxLength={6}
+                        placeholder="482910"
+                        value={otpCode}
+                        onChange={(e) => setOtpCode(e.target.value)}
+                        className="h-8 font-mono text-center tracking-widest text-xs bg-slate-950 border-white/15 text-white"
+                      />
+                    </div>
+                  )}
 
                   <Button
                     type="submit"
-                    disabled={isLoading}
-                    className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-lg shadow-blue-600/40 gap-2 px-6"
+                    disabled={isSubmitting}
+                    className="w-full h-9 text-xs font-semibold gap-2 shadow-md mt-2"
                   >
-                    {isLoading ? (
-                      <span>Verifying Credentials...</span>
-                    ) : (
-                      <>
-                        <span>Authenticate &amp; Enter OCC</span>
-                        <ArrowRight className="size-4" />
-                      </>
-                    )}
+                    <KeyRound className="size-3.5" />
+                    Sign In to Operations Control Center
                   </Button>
-                </div>
-              </div>
-            </form>
-          )}
+                </form>
+              )}
 
-          {/* Tab: Request Clearance / Registration Form */}
-          {activeTab === 'register' && (
-            <form onSubmit={handleRegister} className="mt-4 space-y-3">
-              <p className="text-xs text-slate-300">
-                Submit an authorization request for access to the Kharagpur Division Automated Block Planning System:
-              </p>
-
-              <div className="grid gap-3 sm:grid-cols-3">
-                <div>
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-slate-300">
-                    Full Name &amp; Cadre
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Arunav Roy, IRSE"
-                    className="mt-1 w-full rounded-lg border border-white/20 bg-slate-800/80 px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-slate-300">
-                    HRMS Employee ID
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. HRMS-5029148"
-                    className="mt-1 w-full rounded-lg border border-white/20 bg-slate-800/80 px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-slate-300">
-                    Official Designation
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Assistant Divisional Engineer"
-                    className="mt-1 w-full rounded-lg border border-white/20 bg-slate-800/80 px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2 border-t border-white/10">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setActiveTab('personas')}
-                  className="text-xs text-slate-300 hover:text-white"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs"
-                >
-                  Submit Clearance Request
-                </Button>
-              </div>
-            </form>
-          )}
-
-          {/* Tab: Block Window Inquiry */}
-          {activeTab === 'inquiry' && (
-            <form onSubmit={handleInquirySearch} className="mt-4 space-y-3">
-              <div className="grid gap-3 sm:grid-cols-3">
-                <div>
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-slate-300">
-                    From Station / Section
-                  </label>
-                  <input
-                    type="text"
-                    value={fromStation}
-                    onChange={(e) => setFromStation(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-white/20 bg-slate-800/80 px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-slate-300">
-                    To Station / Section
-                  </label>
-                  <input
-                    type="text"
-                    value={toStation}
-                    onChange={(e) => setToStation(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-white/20 bg-slate-800/80 px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500 font-semibold"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] font-bold uppercase tracking-wider text-slate-300">
-                    Planning Date
-                  </label>
-                  <input
-                    type="date"
-                    value={journeyDate}
-                    onChange={(e) => setJourneyDate(e.target.value)}
-                    className="mt-1 w-full rounded-lg border border-white/20 bg-slate-800/80 px-3 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500 font-mono"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between pt-2 border-t border-white/10">
-                <span className="text-xs text-slate-400 font-mono">
-                  Corridor C01: Howrah–Kharagpur Trunk Line (115 km)
+              {/* Bottom Security Assurance */}
+              <div className="flex items-center justify-between border-t border-white/10 pt-3 text-[10px] text-slate-400 font-mono">
+                <span className="flex items-center gap-1.5">
+                  <span className="size-1.5 rounded-full bg-emerald-500" />
+                  CRIS 256-bit Encrypted
                 </span>
-                <Button
-                  type="submit"
-                  className="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs gap-1.5"
-                >
-                  <Search className="size-3.5" />
-                  <span>Search Feasible Block Slots</span>
-                </Button>
+                <span>SIH26027 · Kharagpur OCC</span>
               </div>
-            </form>
-          )}
-        </div>
+            </div>
 
-        {/* 5. Ministry of Railways Security Footer */}
-        <footer className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4 text-xs text-slate-400 font-mono">
-          <div className="flex items-center gap-2">
-            <span className="size-2 rounded-full bg-emerald-400" />
-            <span>Ministry of Railways · Government of India · CRIS Secured SSL Gateway</span>
+            {/* Back link to Landing */}
+            <div className="text-center">
+              <Link
+                href="/landing"
+                className="text-xs text-slate-300 hover:text-white transition-colors inline-flex items-center gap-1.5"
+              >
+                <span>← Return to Platform Landing &amp; Onboarding Overview</span>
+              </Link>
+            </div>
           </div>
+        </main>
 
-          <div className="flex items-center gap-4">
-            <span className="text-slate-400">FOIS · COA · TMS · ICMS API v4.2</span>
-            <Link href="/network-intelligence" className="text-blue-400 hover:underline">
-              Enter Operations Control Room →
-            </Link>
-          </div>
+        {/* Footer */}
+        <footer className="px-4 py-3 text-center text-[10px] text-slate-400 border-t border-white/5 bg-slate-950/70">
+          Center for Railway Information Systems (CRIS) · South Eastern Railway · Smart India Hackathon
         </footer>
-      </main>
+      </div>
     </div>
   )
 }
 
 export default function AuthPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-slate-950 text-white flex items-center justify-center">Loading Indian Railways Portal...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-slate-950 text-white font-mono text-xs">
+          Loading RailSanket Authentication...
+        </div>
+      }
+    >
       <AuthContent />
     </Suspense>
   )

@@ -13,7 +13,6 @@ import {
   TrainFront,
   Wrench,
   Layers,
-  Radio,
   Sparkles,
   Zap,
   Activity,
@@ -212,20 +211,17 @@ export function CorridorDetailPanel({ corridor }: CorridorDetailPanelProps) {
           </div>
         </div>
 
-        {/* Live OCC Dispatch Radio Transcript Stream */}
-        <div className="mt-2.5 rounded-lg border border-border/60 bg-background/50 p-2.5 font-mono text-[10px]">
-          <div className="flex items-center justify-between text-muted-foreground pb-1 mb-1 border-b border-border/40">
-            <span className="flex items-center gap-1 font-bold text-foreground">
-              <Radio className="size-3 text-cyan-400 animate-pulse" />
-              OCC RADIO LOG
-            </span>
-            <span>CH-04 KGP OCC</span>
+        {/* Dispatch Log */}
+        <div className="mt-2.5 rounded-md border border-border/60 bg-secondary/15 p-2 font-mono text-[10px]">
+          <div className="flex items-center justify-between text-muted-foreground pb-1 mb-1 border-b border-border/30">
+            <span className="font-semibold text-foreground">Section Dispatch Notes</span>
+            <span className="text-[9px]">KGP Control</span>
           </div>
           <div className="space-y-1 text-muted-foreground">
             {dispatchCommsData.slice(0, 2).map((c) => (
               <div key={c.id} className="leading-snug">
-                <span className="text-primary font-semibold">[{c.timestamp}]</span>{' '}
-                <span className="text-foreground font-medium">{c.speaker}:</span>{' '}
+                <span className="text-primary font-medium">[{c.timestamp}]</span>{' '}
+                <span className="text-foreground">{c.speaker}:</span>{' '}
                 <span className="text-muted-foreground line-clamp-1">{c.text}</span>
               </div>
             ))}

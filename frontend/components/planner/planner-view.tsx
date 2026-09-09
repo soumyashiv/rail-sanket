@@ -67,27 +67,27 @@ export function PlannerView() {
           <CardHeader className="flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-border/50">
             <div>
               <div className="flex items-center gap-2">
-                <CardTitle className="text-lg">
-                  {viewMode === 'timeline' ? 'Corridor Timelines · 14 Sep 2026' : 'Corridor Track Schematic Map'}
+                <CardTitle className="text-base font-bold">
+                  {viewMode === 'timeline' ? 'Corridor Timelines' : 'Track Schematic Map'}
                 </CardTitle>
-                <span className="rounded bg-primary/10 px-2 py-0.5 font-mono text-[10px] font-bold text-primary">
+                <span className="rounded bg-primary/10 px-2 py-0.5 font-mono text-[10px] font-semibold text-primary">
                   12h Horizon
                 </span>
               </div>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-0.5 text-xs text-muted-foreground">
                 {viewMode === 'timeline'
-                  ? '06:00–18:00 planning horizon. AI blocks fitted into gaps between passenger & goods train paths.'
-                  : 'Physical line schematics, track configurations, station chainage, and live section blocks.'}
+                  ? '06:00–18:00 operational horizon across Kharagpur Division corridors.'
+                  : 'Physical track configurations, station chainage, and active section blocks.'}
               </p>
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
               {/* View Switcher Tabs */}
-              <div className="flex rounded-lg border border-border bg-secondary/50 p-0.5">
+              <div className="flex rounded-md border border-border bg-secondary/40 p-0.5">
                 <button
                   onClick={() => setViewMode('timeline')}
                   className={cn(
-                    'flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-all',
+                    'flex items-center gap-2 rounded px-2.5 py-1 text-xs font-medium transition-all',
                     viewMode === 'timeline'
                       ? 'bg-background text-foreground shadow-xs'
                       : 'text-muted-foreground hover:text-foreground',
@@ -99,7 +99,7 @@ export function PlannerView() {
                 <button
                   onClick={() => setViewMode('map')}
                   className={cn(
-                    'flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium transition-all',
+                    'flex items-center gap-2 rounded px-2.5 py-1 text-xs font-medium transition-all',
                     viewMode === 'map'
                       ? 'bg-background text-foreground shadow-xs'
                       : 'text-muted-foreground hover:text-foreground',
@@ -110,29 +110,29 @@ export function PlannerView() {
                 </button>
               </div>
 
-              <Button size="sm" onClick={runAutoPlan} className="gap-1.5 shadow-sm">
-                <Wand2 className="size-3.5" />
-                {planned ? 'Re-run auto-plan' : 'Run auto-plan'}
+              <Button size="sm" onClick={runAutoPlan} className="h-8 gap-2 shadow-xs text-xs font-medium">
+                <Sparkles className="size-3.5" />
+                {planned ? 'Re-run Auto-Plan' : 'Run Auto-Plan'}
               </Button>
             </div>
           </CardHeader>
 
-          <CardContent className="space-y-5 pt-5">
+          <CardContent className="space-y-4 pt-4">
             {viewMode === 'timeline' ? (
               <>
                 {corridors.map((c) => (
                   <div key={c.id}>
-                    <div className="mb-1.5 flex items-center justify-between">
+                    <div className="mb-1 flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="rounded bg-primary/10 px-1.5 py-0.2 font-mono text-xs font-bold text-primary">
                           {c.id}
                         </span>
-                        <span className="text-sm font-semibold text-foreground">{c.name}</span>
-                        <span className="text-xs text-muted-foreground">· {c.trafficDensity} traffic</span>
+                        <span className="text-xs font-semibold text-foreground">{c.name}</span>
+                        <span className="text-[11px] text-muted-foreground">· {c.trafficDensity}</span>
                       </div>
                       {selected.corridorId === c.id && (
-                        <span className="text-[11px] font-semibold text-primary">
-                          Block Active: {selected.id}
+                        <span className="text-[11px] font-medium text-primary">
+                          Selected: {selected.id}
                         </span>
                       )}
                     </div>
@@ -144,10 +144,10 @@ export function PlannerView() {
                   </div>
                 ))}
 
-                <div className="flex flex-wrap gap-4 border-t border-border pt-4">
+                <div className="flex flex-wrap gap-4 border-t border-border/60 pt-3">
                   {legend.map((l) => (
-                    <div key={l.label} className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <span className={cn('size-3 rounded border', l.className)} />
+                    <div key={l.label} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <span className={cn('size-2.5 rounded border', l.className)} />
                       {l.label}
                     </div>
                   ))}
@@ -164,27 +164,22 @@ export function PlannerView() {
 
         {/* Candidate Blocks List */}
         <Card className="border-border/80 shadow-xs">
-          <CardHeader className="flex-row items-center justify-between pb-3">
-            <div>
-              <CardTitle className="text-base">AI Recommended Blocks</CardTitle>
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                Click any candidate block to inspect its bundling, rationale & alternative
-              </p>
-            </div>
-            <span className="rounded-full border border-primary/20 bg-primary/10 px-2.5 py-0.5 font-mono text-xs font-semibold text-primary">
-              {recommendedBlocks.length} Candidate Windows
+          <CardHeader className="flex-row items-center justify-between py-3 border-b border-border/40">
+            <CardTitle className="text-sm font-semibold">Recommended Block Windows</CardTitle>
+            <span className="rounded-md bg-secondary px-2 py-0.5 font-mono text-xs font-medium text-muted-foreground">
+              {recommendedBlocks.length} Windows Available
             </span>
           </CardHeader>
-          <CardContent className="grid gap-2.5 sm:grid-cols-2">
+          <CardContent className="grid gap-2.5 pt-3 sm:grid-cols-2">
             {recommendedBlocks.map((b) => (
               <button
                 key={b.id}
                 onClick={() => setSelected(b)}
                 className={cn(
-                  'rounded-xl border p-3.5 text-left transition-all duration-150',
+                  'rounded-lg border p-3 text-left transition-all duration-150',
                   selected.id === b.id
-                    ? 'border-primary bg-primary/10 ring-2 ring-primary/40 shadow-sm'
-                    : 'border-border/70 hover:border-border hover:bg-secondary/40',
+                    ? 'border-primary bg-primary/10 ring-1 ring-primary shadow-xs'
+                    : 'border-border/70 hover:border-border hover:bg-secondary/30',
                 )}
               >
                 <div className="flex items-center justify-between">
@@ -193,13 +188,13 @@ export function PlannerView() {
                     {b.confidence}
                   </StatusBadge>
                 </div>
-                <p className="mt-1.5 text-sm font-semibold text-foreground truncate">{b.section}</p>
-                <p className="mt-0.5 font-mono text-xs text-muted-foreground">
+                <p className="mt-1 text-xs font-semibold text-foreground truncate">{b.section}</p>
+                <p className="mt-0.5 font-mono text-[11px] text-muted-foreground">
                   {b.start}–{b.end} · {b.durationMin}m · {b.blockType}
                 </p>
-                <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
-                  <span>{b.taskIds.length} tasks bundled</span>
-                  <span className="font-mono font-semibold text-foreground">{b.utilization}% util</span>
+                <div className="mt-1.5 flex items-center justify-between text-[11px] text-muted-foreground border-t border-border/40 pt-1.5">
+                  <span>{b.taskIds.length} tasks</span>
+                  <span className="font-mono font-medium text-foreground">{b.utilization}% util</span>
                 </div>
               </button>
             ))}
@@ -224,44 +219,46 @@ function BlockDetail({ block }: { block: RecommendedBlock }) {
   ]
 
   return (
-    <Card className="h-fit xl:sticky xl:top-20">
-      <CardHeader>
+    <Card className="h-fit xl:sticky xl:top-20 border-border/80 shadow-xs">
+      <CardHeader className="pb-3 border-b border-border/40">
         <div className="flex items-center justify-between">
-          <CardTitle className="font-mono">{block.id}</CardTitle>
+          <CardTitle className="font-mono text-base">{block.id}</CardTitle>
           <StatusBadge tone={impactTone(block.operationalImpact)}>
             {block.operationalImpact} impact
           </StatusBadge>
         </div>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-0.5 text-xs text-muted-foreground">
           {corridorName(block.corridorId)} · {block.section}
         </p>
-        <p className="font-mono text-sm">
+        <p className="font-mono text-xs font-semibold text-foreground">
           {block.start}–{block.end} · {block.blockType}
         </p>
       </CardHeader>
-      <CardContent className="space-y-5">
+      <CardContent className="space-y-4 pt-3">
         <div className="grid grid-cols-2 gap-2">
           {metrics.map((m) => (
-            <div key={m.label} className="rounded-lg border border-border p-2.5">
-              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <m.icon className="size-3.5" />
+            <div key={m.label} className="rounded-md border border-border/60 bg-secondary/20 p-2">
+              <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                <m.icon className="size-3" />
                 {m.label}
               </div>
-              <p className="mt-1 text-sm font-semibold">{m.value}</p>
+              <p className="mt-0.5 text-xs font-bold text-foreground">{m.value}</p>
             </div>
           ))}
         </div>
 
         <div>
-          <p className="mb-2 text-sm font-medium">Bundled tasks ({block.taskIds.length})</p>
-          <ul className="space-y-1.5">
+          <p className="mb-1.5 text-xs font-semibold text-foreground">
+            Bundled Tasks ({block.taskIds.length})
+          </p>
+          <ul className="space-y-1">
             {block.taskIds.map((id) => {
               const t = getTask(id)
               if (!t) return null
               return (
-                <li key={id} className="flex items-center gap-2 rounded-md border border-border p-2">
-                  <span className="font-mono text-xs text-muted-foreground">{t.id}</span>
-                  <span className="min-w-0 flex-1 truncate text-sm">{t.taskType}</span>
+                <li key={id} className="flex items-center gap-2 rounded border border-border/60 p-1.5 bg-secondary/10">
+                  <span className="font-mono text-[10px] text-muted-foreground">{t.id}</span>
+                  <span className="min-w-0 flex-1 truncate text-xs font-medium">{t.taskType}</span>
                   <StatusBadge tone={criticalityTone(t.criticality)} dot={false}>
                     {t.criticality}
                   </StatusBadge>
@@ -272,59 +269,61 @@ function BlockDetail({ block }: { block: RecommendedBlock }) {
         </div>
 
         <div>
-          <p className="mb-2 text-sm font-medium">Why this block</p>
+          <p className="mb-1.5 text-xs font-semibold text-foreground">Optimization Rationale</p>
           <ul className="space-y-1.5">
             {block.reasons.map((r) => (
-              <li key={r} className="flex gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-success" />
-                <span className="text-pretty">{r}</span>
+              <li key={r} className="flex items-start gap-2 text-xs text-muted-foreground">
+                <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary/70" />
+                <span className="leading-snug">{r}</span>
               </li>
             ))}
           </ul>
         </div>
 
         {block.alternative && (
-          <div className="rounded-lg border border-dashed border-border bg-secondary/40 p-3">
-            <div className="flex items-center gap-1.5 text-xs font-medium">
-              <ArrowRightLeft className="size-3.5" />
-              Alternative window
+          <div className="rounded-md border border-dashed border-border/80 bg-secondary/30 p-2.5">
+            <div className="flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground">
+              <ArrowRightLeft className="size-3" />
+              Alternative Window
             </div>
-            <p className="mt-1 font-mono text-sm">
+            <p className="mt-0.5 font-mono text-xs font-medium">
               {block.alternative.start}–{block.alternative.end}
             </p>
-            <p className="mt-0.5 text-xs text-muted-foreground text-pretty">
+            <p className="text-[11px] text-muted-foreground mt-0.5">
               {block.alternative.note}
             </p>
           </div>
         )}
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 pt-1">
           <Button
-            className="flex-1"
+            size="sm"
+            className="flex-1 h-8 text-xs font-medium"
             variant={decision === 'approved' ? 'default' : 'outline'}
             onClick={() => {
               setDecision('approved')
               toast.success(`${block.id} approved`, { description: 'Added to the weekly plan.' })
             }}
           >
-            <CheckCircle2 className="size-4" />
+            <CheckCircle2 className="size-3.5" />
             Approve
           </Button>
           <Button
-            className="flex-1"
+            size="sm"
+            className="flex-1 h-8 text-xs font-medium"
             variant={decision === 'rejected' ? 'destructive' : 'outline'}
             onClick={() => {
               setDecision('rejected')
               toast(`${block.id} rejected`, { description: 'Returned to the queue for replanning.' })
             }}
           >
-            <XCircle className="size-4" />
+            <XCircle className="size-3.5" />
             Reject
           </Button>
         </div>
         {decision && (
-          <p className="text-center text-xs text-muted-foreground">
-            Decision recorded: <span className="font-medium capitalize">{decision}</span>
+          <p className="text-center text-[11px] text-muted-foreground">
+            Status: <span className="font-semibold capitalize text-foreground">{decision}</span>
           </p>
         )}
       </CardContent>

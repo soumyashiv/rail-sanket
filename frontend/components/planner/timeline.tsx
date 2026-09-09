@@ -54,12 +54,12 @@ export function CorridorTimeline({
       </div>
 
       {/* Timeline bar */}
-      <div className="relative h-20 rounded border border-border bg-secondary/20 overflow-hidden">
+      <div className="relative h-14 rounded-md border border-border bg-secondary/15 overflow-hidden">
         {/* Major gridlines every 2h */}
         {rulerHours.map((h) => (
           <div
             key={h}
-            className="absolute inset-y-0 w-px bg-border/60"
+            className="absolute inset-y-0 w-px bg-border/50"
             style={{ left: `${pct(h * 60)}%` }}
             aria-hidden
           />
@@ -70,7 +70,7 @@ export function CorridorTimeline({
           .map((h) => (
             <div
               key={`minor-${h}`}
-              className="absolute inset-y-0 w-px bg-border/20"
+              className="absolute inset-y-0 w-px bg-border/15"
               style={{ left: `${pct(h * 60)}%` }}
               aria-hidden
             />
@@ -90,24 +90,22 @@ export function CorridorTimeline({
               onClick={() => isBlock && onSelectBlock?.(s.meta)}
               style={{ left: `${left}%`, width: `${Math.max(width, 0.4)}%` }}
               className={cn(
-                'absolute flex flex-col justify-center overflow-hidden rounded border px-1.5 text-left transition-all',
+                'absolute flex flex-col justify-center overflow-hidden rounded px-1.5 text-left transition-all',
                 kindStyle[s.kind],
-                // Blocks are full height and interactive
                 isBlock
-                  ? 'inset-y-0.5 cursor-pointer hover:brightness-110 hover:shadow-md text-[10px]'
+                  ? 'inset-y-0.5 cursor-pointer hover:brightness-110 hover:shadow-sm text-[10px]'
                   : 'inset-y-1 cursor-default text-[10px]',
-                // Trains are slightly inset top/bottom
-                isTrain && 'inset-y-2',
+                isTrain && 'inset-y-1.5 opacity-90',
                 active &&
-                  'ring-2 ring-primary ring-offset-2 ring-offset-background shadow-lg scale-[1.01] z-10 brightness-115 font-semibold',
+                  'ring-2 ring-primary ring-offset-1 ring-offset-background shadow-md z-10 brightness-110 font-semibold',
               )}
               title={`${s.label} (${s.start}–${s.end})`}
             >
               {width > 5 && (
-                <span className="truncate font-medium leading-tight">{s.label}</span>
+                <span className="truncate font-medium leading-none">{s.label}</span>
               )}
-              {width > 11 && s.meta && (
-                <span className="truncate text-[9px] leading-tight opacity-85">{s.meta}</span>
+              {width > 12 && s.meta && (
+                <span className="truncate text-[9px] leading-tight opacity-80 mt-0.5">{s.meta}</span>
               )}
             </button>
           )
